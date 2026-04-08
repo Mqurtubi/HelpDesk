@@ -37,10 +37,22 @@ export class AuthService {
   }
   hasRole(role: string): boolean {
     const user = this.getCurrentUser();
-    return user?.roleName == role;
+    return user?.roleName === role;
   }
+
   hasAnyRole(roles: string[]): boolean {
     const user = this.getCurrentUser();
-    return !user && roles.includes(user.)
+    return !!user && roles.includes(user.roleName);
+  }
+  isAdmin(): boolean {
+    return this.hasRole('Admin');
+  }
+
+  isAgent(): boolean {
+    return this.hasRole('Agent');
+  }
+
+  isEmployee(): boolean {
+    return this.hasRole('Employee');
   }
 }

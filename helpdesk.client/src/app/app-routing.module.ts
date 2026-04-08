@@ -8,6 +8,7 @@ import { DashboardHomeComponent } from './feautures/dashboard/pages/dashboard-ho
 import { MainLayoutComponent } from './layout/main-layout/main-layout.component'
 import { LoginComponent } from './feautures/auth/pages/login/login.component'
 import { authGuard } from './core/guards/auth.guard';
+import { roleGuard } from './core/guards/role.guard'
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
   {
@@ -16,11 +17,11 @@ const routes: Routes = [
     canActivate: [authGuard],
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-      { path: 'dashboard', component: DashboardHomeComponent },
-      { path: 'tickets', component: TicketListComponent },
-      { path: 'tickets/create', component: TicketCreateComponent },
-      { path: 'tickets/:id', component: TicketDetailComponent },
-      { path: 'tickets/:id/edit', component: TicketEditComponent }
+      { path: 'dashboard', component: DashboardHomeComponent, canActivate: [roleGuard], data: { roles: ['Admin', 'Agent'] } },
+      { path: 'tickets', component: TicketListComponent, canActivate: [roleGuard], data: { roles: ['Admin', 'Agent', 'Employee'] } },
+      { path: 'tickets/create', component: TicketCreateComponent, canActivate: [roleGuard], data: { roles: ['Admin', 'Employee'] } },
+      { path: 'tickets/:id', component: TicketDetailComponent, canActivate: [roleGuard], data: { roles: ['Admin', 'Agent', 'Employee'] } },
+      { path: 'tickets/:id/edit', component: TicketEditComponent, canActivate: [roleGuard], data: { roles: ['Admin'] } }
     ]
   },
   { path: "**", redirectTo:'dashboard' }
