@@ -1,0 +1,69 @@
+<div class="min-h-screen bg-slate-100 p-6">
+  <div class="max-w-3xl mx-auto">
+    <div class="mb-6">
+      <h1 class="text-3xl font-bold text-slate-800">Edit Ticket</h1>
+      <p class="text-slate-500 mt-1">Ubah data ticket yang sudah ada</p>
+    </div>
+
+    <div *ngIf="loadingTicket" class="bg-white rounded-2xl shadow p-6 text-slate-600">
+      Loading data ticket...
+    </div>
+
+    <div *ngIf="!loadingTicket" class="bg-white rounded-2xl shadow p-6">
+      <form (ngSubmit)="submitForm()" class="space-y-5">
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 mb-2">
+            Title
+          </label>
+          <input type="text"
+                 name="title"
+                 [(ngModel)]="formData.title"
+                 class="w-full border border-slate-300 rounded-xl px-4 py-3"
+                 placeholder="Masukkan judul ticket" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 mb-2">
+            Description
+          </label>
+          <textarea name="description"
+                    [(ngModel)]="formData.description"
+                    rows="5"
+                    class="w-full border border-slate-300 rounded-xl px-4 py-3"
+                    placeholder="Masukkan deskripsi masalah"></textarea>
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 mb-2">
+            Priority
+          </label>
+          <select name="priority"
+                  [(ngModel)]="formData.priority"
+                  class="w-full border border-slate-300 rounded-xl px-4 py-3">
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+            <option value="Critical">Critical</option>
+          </select>
+        </div>
+
+        <div *ngIf="errorMessage" class="bg-red-100 text-red-700 p-3 rounded-xl">
+          {{ errorMessage }}
+        </div>
+
+        <div class="flex gap-3">
+          <button type="submit"
+                  [disabled]="loading"
+                  class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl shadow disabled:opacity-50">
+            {{ loading ? 'Menyimpan...' : 'Simpan Perubahan' }}
+          </button>
+
+          <a [routerLink]="['/tickets', ticketId]"
+             class="bg-slate-200 hover:bg-slate-300 text-slate-800 px-5 py-3 rounded-xl">
+            Batal
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

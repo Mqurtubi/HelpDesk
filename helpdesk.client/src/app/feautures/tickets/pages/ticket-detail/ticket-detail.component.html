@@ -1,0 +1,98 @@
+<div class="min-h-screen bg-slate-100 p-6">
+  <div class="max-w-5xl mx-auto space-y-6">
+
+    <div *ngIf="errorMessage" class="bg-red-100 text-red-700 p-4 rounded-xl">
+      {{ errorMessage }}
+    </div>
+
+    <div class="bg-white rounded-2xl shadow p-6" *ngIf="ticket">
+      <h1 class="text-3xl font-bold text-slate-800 mb-2">{{ ticket.title }}</h1>
+      <p class="text-slate-600 mb-4">{{ ticket.description }}</p>
+
+      <div class="grid grid-cols-2 gap-4 text-sm">
+        <div><span class="font-semibold">Status:</span> {{ ticket.status }}</div>
+        <div><span class="font-semibold">Priority:</span> {{ ticket.priority }}</div>
+        <div><span class="font-semibold">Pembuat:</span> {{ ticket.createdByUserName }}</div>
+        <div><span class="font-semibold">Department:</span> {{ ticket.departmentName }}</div>
+        <div><span class="font-semibold">Tanggal:</span> {{ ticket.createdAt | date:'dd/MM/yyyy HH:mm' }}</div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow p-6">
+      <h2 class="text-xl font-bold mb-4">Update Status</h2>
+
+      <div class="flex gap-3">
+        <select [(ngModel)]="selectedStatus" class="border rounded-xl px-4 py-2 w-60">
+          <option value="Open">Open</option>
+          <option value="In Progress">In Progress</option>
+          <option value="Resolved">Resolved</option>
+          <option value="Closed">Closed</option>
+        </select>
+
+        <button (click)="updateStatus()"
+                class="bg-blue-600 text-white px-4 py-2 rounded-xl">
+          Simpan Status
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="ticket" class="mt-4">
+      <a [routerLink]="['/tickets', ticket.id, 'edit']"
+         class="inline-block bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-xl">
+        Edit Ticket
+      </a>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow p-6">
+      <h2 class="text-xl font-bold mb-4">Komentar</h2>
+
+      <div *ngIf="loadingComments" class="text-slate-500 mb-4">
+        Loading komentar...
+      </div>
+
+      <div class="space-y-3 mb-6" *ngIf="!loadingComments">
+        <div *ngFor="let comment of comments" class="border rounded-xl p-4">
+          <div class="font-semibold text-slate-800">{{ comment.userName }}</div>
+          <div class="text-slate-600 text-sm mb-2">{{ comment.createdAt | date:'dd/MM/yyyy HH:mm' }}</div>
+          <div class="text-slate-700">{{ comment.message }}</div>
+        </div>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 mb-2">
+            Pilih User
+          </label>
+
+          <div *ngIf="loadingUsers" class="text-sm text-slate-500 mb-2">
+            Loading user...
+          </div>
+
+          <select [(ngModel)]="commentUserId"
+                  class="w-full border rounded-xl px-4 py-3">
+            <option *ngFor="let user of users" [ngValue]="user.id">
+              {{ user.fullName }} - {{ user.departmentName }}
+            </option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 mb-2">
+            Komentar
+          </label>
+
+          <textarea [(ngModel)]="commentMessage"
+                    rows="4"
+                    class="w-full border rounded-xl px-4 py-3"
+                    placeholder="Tulis komentar..."></textarea>
+        </div>
+
+        <button (click)="submitComment()"
+                class="bg-green-600 text-white px-4 py-2 rounded-xl">
+          Kirim Komentar
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
