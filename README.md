@@ -56,7 +56,7 @@ Make sure you have installed:
 - SQL Server
 
 ---
-
+```
 ## Backend Setup
 
 1. Go to the server project folder:
