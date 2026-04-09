@@ -17,16 +17,5 @@ This project is designed to help users create, track, and manage support tickets
 ### Frontend
 - Angular
 - TypeScript
-- HTML / CSS
-
-
-
----
-```
-## Backend Setup
-
-1. Go to the server project folder:
-
-```bash
-cd HelpDesk.Server
-```
+- Tailwind
+- HTML 
