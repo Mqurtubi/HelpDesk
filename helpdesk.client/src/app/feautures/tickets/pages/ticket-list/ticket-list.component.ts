@@ -18,7 +18,7 @@ export class TicketListComponent implements OnInit {
   selectedPriority = '';
 
   currentPage = 1;
-  pageSize = 2;
+  pageSize = 5;
   totalPages = 1;
 
   loading = false;

@@ -1,7 +1,7 @@
 import { HttpClientModule, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { FormsModule } from '@angular/forms'
+import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -13,6 +13,10 @@ import { DashboardHomeComponent } from './feautures/dashboard/pages/dashboard-ho
 import { MainLayoutComponent } from './layout/main-layout/main-layout.component';
 import { LoginComponent } from './feautures/auth/pages/login/login.component';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
+import { UserListComponent } from './feautures/users/pages/user-list/user-list.component';
+import { UserCreateComponent } from './feautures/users/pages/user-create/user-create.component';
+import { UserDetailComponent } from './feautures/users/pages/user-detail/user-detail.component';
+import { UserEditComponent } from './feautures/users/pages/user-edit/user-edit.component';
 
 @NgModule({
   declarations: [
@@ -23,11 +27,17 @@ import { authInterceptor } from './core/interceptors/auth.interceptor';
     TicketEditComponent,
     DashboardHomeComponent,
     MainLayoutComponent,
-    LoginComponent
+    LoginComponent,
+    UserListComponent,
+    UserListComponent,
+    UserCreateComponent,
+    UserDetailComponent,
+    UserEditComponent
   ],
   imports: [
     BrowserModule, HttpClientModule,
-    AppRoutingModule, FormsModule
+    AppRoutingModule, FormsModule,
+    ReactiveFormsModule
   ],
   providers: [provideHttpClient(withInterceptors([authInterceptor ]))],
   bootstrap: [AppComponent]

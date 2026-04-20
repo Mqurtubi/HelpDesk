@@ -7,7 +7,7 @@ using System.Security.Claims;
 namespace HelpDesk.Server.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class TicketCommentController : ControllerBase
     {
         private readonly AppDbContext _context;

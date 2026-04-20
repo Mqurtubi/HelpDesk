@@ -19,7 +19,7 @@ export interface UpdateTicketRequest {
   providedIn: 'root'
 })
 export class TicketService {
-  private apiUrl = '/tickets'
+  private apiUrl = '/api/Tickets'
 
   constructor(private http: HttpClient) { }
 
@@ -37,5 +37,8 @@ export class TicketService {
   }
   updateTicketStatus(id: number, payload: { status: string }): Observable<any> {
     return this.http.put(`${this.apiUrl}/${id}/status`, payload)
+  }
+  deleteTicket(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`)
   }
 }

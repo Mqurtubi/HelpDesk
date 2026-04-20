@@ -7,7 +7,7 @@ import { DashboardSummary } from '../../feautures/dashboard/models/dashboard-sum
 })
 export class DashboardService {
 
-  private apiUrl='/dashboard'
+  private apiUrl='/api/Dashboard'
   constructor(private http: HttpClient) { }
   getSummary(): Observable<DashboardSummary> {
     return this.http.get<DashboardSummary>(`${this.apiUrl}/summary`)

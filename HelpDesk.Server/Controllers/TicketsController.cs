@@ -10,7 +10,7 @@ namespace HelpDesk.Server.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class TicketsController:ControllerBase
     {
         private readonly AppDbContext _context;
@@ -82,7 +82,7 @@ namespace HelpDesk.Server.Controllers
             {
                 return NotFound(new { message = $"ticket dengan id {id} tidak ada" });
             }
-            if(roleClaim == "Employee" && int.TryParse(userIdClaim, out var userId) && ticket.CreatedByUserId == userId){
+            if(roleClaim == "Employee" && int.TryParse(userIdClaim, out var userId) && ticket.CreatedByUserId != userId){
                 return Forbid();
             }
             return Ok(ticket);
@@ -186,6 +186,33 @@ namespace HelpDesk.Server.Controllers
                 newStatus = ticket.Status
             });
         }
+        [Authorize]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteTicket(int id)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var roleCLaim = User.FindFirst(ClaimTypes.Role)?.Value;
+            if (!int.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized();
+            }
+            var ticket = await _context.Tickets.FirstOrDefaultAsync(x => x.Id == id);
+            if(ticket == null)
+            {
+                return BadRequest(new { message = "ticket tidak ditemukan" });
+            }
+            var isAdmin = roleCLaim == "Admin";
+            var isOwnerOpenTicket = roleCLaim == "Employee"
+                && ticket.CreatedByUserId == userId
+                && ticket.Status == "Open";
 
+            if(!isAdmin && !isOwnerOpenTicket)
+            {
+                return Forbid();
+            }
+            _context.Tickets.Remove(ticket);
+            await _context.SaveChangesAsync();
+            return Ok(new { message = "tiket berhasil dihapus" });
+        }
     }
 }

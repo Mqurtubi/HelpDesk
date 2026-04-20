@@ -6,11 +6,11 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-
+using Microsoft.AspNetCore.Authorization;
 namespace HelpDesk.Server.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class AuthController :ControllerBase
     {
         private readonly AppDbContext _context;
@@ -74,6 +74,7 @@ namespace HelpDesk.Server.Controllers
 
             var response = new LoginResponseDto
             {
+                Id=user.Id,
                 Token = token,
                 FullName = user.FullName,
                 Email = user.Email,
@@ -82,5 +83,36 @@ namespace HelpDesk.Server.Controllers
             };
             return Ok(response);
         }
+
+        [Authorize]
+        [HttpGet("me")]
+        public async Task<ActionResult<CurrentUserResponseDto>> GetCurrentUser()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if(!int.TryParse(userIdClaim,out var userId))
+            {
+                return Unauthorized();
+            }
+            var user = await _context.AppUsers
+                .Include(x => x.Departement)
+                .Include(x => x.Role)
+                .Where(x => x.Id == userId)
+                .Select(x => new CurrentUserResponseDto
+                {
+                    Id = x.Id,
+                    FullName = x.FullName,
+                    Email = x.Email,
+                    DepartmentId = x.DepartementId,
+                    DepartmentName = x.Departement != null ? x.Departement.Name : string.Empty,
+                    RoleId = x.RoleId,
+                    RoleName = x.Role != null ? x.Role.Name : string.Empty,
+                })
+                .FirstOrDefaultAsync();
+            if(user == null)
+            {
+                return NotFound(new { message = "user tidak ditemukan" });
+            }
+            return Ok(user);
+        } 
     }
 }

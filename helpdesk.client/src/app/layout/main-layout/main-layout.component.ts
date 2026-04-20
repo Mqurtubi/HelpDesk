@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
-import { AuthService } from '../../core/services/auth.service';
+import { Component, OnInit } from '@angular/core';
+import { AuthService, CurrentUser } from '../../core/services/auth.service';
 import { Router } from '@angular/router';
+import { Observable } from 'rxjs'
 
 @Component({
   selector: 'app-main-layout',
@@ -8,9 +9,16 @@ import { Router } from '@angular/router';
   templateUrl: './main-layout.component.html',
   styleUrl: './main-layout.component.css'
 })
-export class MainLayoutComponent {
+export class MainLayoutComponent implements OnInit {
   sidebarOpen = false;
-  constructor(public authService: AuthService, private router: Router) { }
+  currentUser$!: Observable<CurrentUser | null>
+  constructor(public authService: AuthService, private router: Router) {
+    
+  }
+  ngOnInit(): void {
+    this.currentUser$ = this.authService.currentUser$;
+  }
+  
   toggleSidebar(): void {
     this.sidebarOpen = !this.sidebarOpen
   }

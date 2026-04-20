@@ -8,10 +8,12 @@
     <BuildOutputFolder>$(MSBuildProjectDirectory)\dist\helpdesk.client\browser\</BuildOutputFolder>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="src\app\feautures\tickets\NewFolder1\**" />
     <None Remove="src\app\feautures\tickets\NewFolder\**" />
+    <TypeScriptConfiguration Remove="src\app\feautures\tickets\NewFolder1\**" />
     <TypeScriptConfiguration Remove="src\app\feautures\tickets\NewFolder\**" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="src\app\feautures\tickets\NewFolder1\" />
+    <Folder Include="src\app\feautures\users\pages\" />
   </ItemGroup>
 </Project>

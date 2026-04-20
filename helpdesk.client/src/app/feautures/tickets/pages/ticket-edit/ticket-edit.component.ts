@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, Validators, FormGroup } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TicketService } from '../../../../core/services/ticket.service'
 @Component({
@@ -8,7 +9,8 @@ import { TicketService } from '../../../../core/services/ticket.service'
   styleUrl: './ticket-edit.component.css'
 })
 export class TicketEditComponent implements OnInit {
-  ticketId = 0
+  ticketId!: number
+  form!: FormGroup
   formData = {
     title: '',
     description: '',
@@ -21,11 +23,22 @@ export class TicketEditComponent implements OnInit {
   constructor(
     private ticketService: TicketService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private formBuilder: FormBuilder
   ) { }
 
   ngOnInit():void {
     this.ticketId = Number(this.route.snapshot.paramMap.get('id'))
+    if (!this.ticketId) {
+      this.errorMessage = "gagal ambil ticket id"
+      return;
+    }
+
+    this.form = this.formBuilder.group({
+      title: ['', Validators.required],
+      description: ['', Validators.required],
+      priority: ['', Validators.required]
+    })
     this.loadTicket()
   }
 
@@ -35,10 +48,12 @@ export class TicketEditComponent implements OnInit {
 
     this.ticketService.getTicketById(this.ticketId).subscribe({
       next: (response) => {
-        this.formData.title = response.title
-        this.formData.description = response.description
-        this.formData.priority = response.priority
-        this.loadingTicket = false
+        this.form.patchValue({
+          title: response.title,
+          description: response.description,
+          priority: response.priority
+        })
+        this.loadingTicket=false
       },
       error: (error) => {
         console.log(error)
@@ -49,17 +64,12 @@ export class TicketEditComponent implements OnInit {
   }
   submitForm(): void {
     this.errorMessage = ''
-    if (!this.formData.title.trim()) {
-      this.errorMessage = 'Title wajib diisi.';
-      return;
-    }
-
-    if (!this.formData.description.trim()) {
-      this.errorMessage = 'Description wajib diisi.';
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
       return;
     }
     this.loading = true
-    this.ticketService.updateTicket(this.ticketId, this.formData).subscribe({
+    this.ticketService.updateTicket(this.ticketId, this.form.value).subscribe({
       next: (response) => {
         this.loading = false
         this.router.navigate(['/tickets', this.ticketId])
@@ -70,5 +80,14 @@ export class TicketEditComponent implements OnInit {
         this.loading=false
       }
     })
+  }
+  get title() {
+    return this.form.get('title')
+  }
+  get description() {
+    return this.form.get('description')
+  }
+  get priority() {
+    return this.form.get('priority')
   }
 }

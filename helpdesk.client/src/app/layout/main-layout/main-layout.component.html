@@ -22,7 +22,6 @@
         <span>📊</span>
         <span>Dashboard</span>
       </a>
-
       <a routerLink="/tickets"
          routerLinkActive="bg-slate-800 text-white"
          *ngIf="authService.hasAnyRole(['Admin', 'Agent', 'Employee'])"
@@ -31,6 +30,15 @@
          (click)="closeSidebar()">
         <span>🎫</span>
         <span>Tickets</span>
+      </a>
+      <a routerLink="/users"
+         routerLinkActive="bg-slate-800 text-white"
+         *ngIf="authService.hasAnyRole(['Admin'])"
+         [routerLinkActiveOptions]="{ exact: true }"
+         class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition"
+         (click)="closeSidebar()">
+        <span>🎫</span>
+        <span>User Managenement</span>
       </a>
 
       <a routerLink="/tickets/create"
@@ -64,20 +72,17 @@
           <h2 class="text-lg font-semibold text-slate-800">HelpDesk Panel</h2>
           <p class="text-xs text-slate-500">Ticket Management System</p>
         </div>
-        <div class="hidden sm:block text-right" *ngIf="authService.getCurrentUser() as user">
-          <p class="text-sm font-semibold text-slate-700">{{ user.fullName }}</p>
-          <p class="text-xs text-slate-500">{{ user.roleName }}</p>
-        </div>
       </div>
 
-      <div class="flex items-center gap-3">
-        <div class="hidden sm:block text-right">
-          <p class="text-sm font-semibold text-slate-700">Admin</p>
-          <p class="text-xs text-slate-500">Administrator</p>
+      <div class="flex items-center gap-3" *ngIf="currentUser$ | async as user">
+        <div class="hidden sm:block text-right" *ngIf="user">
+          <p class="text-sm font-semibold text-slate-700">{{user.fullName}}</p>
+          <p class="text-xs text-slate-500">{{user.roleName}}</p>
         </div>
 
-        <div class="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold">
-          A
+        <div class="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold"
+             *ngIf="authService.getCurrentUser() as user">
+          {{user.fullName.charAt(0)}}
         </div>
       </div>
     </header>

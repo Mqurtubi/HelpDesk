@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-
+import { AuthService } from './core/services/auth.service'
 interface WeatherForecast {
   date: string;
   temperatureC: number;
@@ -17,10 +17,12 @@ interface WeatherForecast {
 export class AppComponent implements OnInit {
   public forecasts: WeatherForecast[] = [];
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private authService: AuthService) { }
 
   ngOnInit() {
-    this.getForecasts();
+    if (this.authService.isLoggedIn()) {
+      this.authService.refreshCurrentUser();
+    }
   }
 
   getForecasts() {

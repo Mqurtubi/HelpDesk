@@ -6,51 +6,52 @@
     </div>
 
     <div class="bg-white rounded-2xl shadow p-6">
-      <form (ngSubmit)="submitForm()" #ticketForm="ngForm" class="space-y-5">
+      <form (ngSubmit)="submitForm()" [formGroup]="form" #ticketForm="ngForm" class="space-y-5">
         <div>
           <label class="block text-sm font-semibold text-slate-700 mb-2">
             Title
           </label>
           <input type="text"
-                 name="title"
-                 [(ngModel)]="formData.title"
+                 formControlName="title"
                  class="w-full border border-slate-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                 [class.border-red-400]="title?.touched && title?.invalid"
+                 [class.border-slate-300]="!(title?.touched && title?.invalid)"
                  placeholder="Masukkan judul ticket" />
+                <p *ngIf="title?.touched && title?.errors?.['required']"
+                class="mt-2 text-sm text-red-600">
+                title wajib diisi.
+                </p>
         </div>
 
         <div>
           <label class="block text-sm font-semibold text-slate-700 mb-2">
             Description
           </label>
-          <textarea name="description"
-                    [(ngModel)]="formData.description"
+          <textarea formControlName="description"
                     rows="5"
                     class="w-full border border-slate-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    [class.border-red-400]="description?.touched && description?.invalid"
+                    [class.border-slate-300]="!(description?.touched && description?.invalid)"
                     placeholder="Masukkan deskripsi masalah"></textarea>
+          <p *ngIf="description?.touched && description?.errors?.['required']"
+             class="mt-2 text-sm text-red-600">
+            description wajib diisi.
+          </p>
         </div>
 
         <div>
           <label class="block text-sm font-semibold text-slate-700 mb-2">
             Priority
           </label>
-          <select name="priority"
-                  [(ngModel)]="formData.priority"
-                  class="w-full border border-slate-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <select formGroupName="form"
+                  class="w-full border border-slate-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  [class.border-red-400]="priority?.touched && priority?.invalid"
+                  [class.border-slate-300]="!(priority?.touched && priority?.invalid)"
+                  >
             <option value="Low">Low</option>
             <option value="Medium">Medium</option>
             <option value="High">High</option>
             <option value="Critical">Critical</option>
-          </select>
-        </div>
-
-        <div>
-          <label class="block text-sm font-semibold text-slate-700 mb-2">
-            Created By User Id
-          </label>
-          <select name="createdByUserId" [(ngModel)]="formData.createdByUserId">
-            <option *ngFor="let user of users" [value]="user.id">
-              {{ user.fullName }} - {{ user.departmentName }}
-            </option>
           </select>
         </div>
 

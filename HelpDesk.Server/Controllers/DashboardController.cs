@@ -7,7 +7,7 @@ namespace HelpDesk.Server.Controllers
 {
     [Authorize(Roles = "Admin, Agent")]
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class DashboardController:ControllerBase
     {
         private readonly AppDbContext _context;

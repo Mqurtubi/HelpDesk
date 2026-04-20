@@ -14,7 +14,7 @@ export interface CreateTicketCommentRequest {
   providedIn: 'root'
 })
 export class TicketCommentService {
-  private apiUrl = '/ticketcomment'
+  private apiUrl = '/api/TicketComment'
   constructor(private http: HttpClient) { }
   getCommentByTicketId(ticketId: number): Observable<TicketComment[]> {
     return this.http.get<TicketComment[]>(`${this.apiUrl}/ticket/${ticketId}`)

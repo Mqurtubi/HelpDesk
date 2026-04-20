@@ -18,11 +18,12 @@ export class LoginComponent {
 
   submitForm(): void{
     this.errorMessage = '';
-    this.loading = true;
+    this.loading = true;    
     this.authService.login(this.formData).subscribe({
       next: (response) => {
         this.loading = false;
-        this.router.navigate(['/dashboard'])
+        this.router.navigate(['/tickets'])
+        console.log(response)
       },
       error: (error) => {
         console.log(error)

@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { Ticket } from '../../models/ticket.model'
 import { TicketComment } from '../../models/ticket-comment.model'
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TicketService } from '../../../../core/services/ticket.service';
 import { TicketCommentService } from '../../../../core/services/ticket-comment.service'
 import { UserService } from '../../../../core/services/user.service'
+import { AuthService } from '../../../../core/services/auth.service'
 import { User } from '../../../users/models/user.model';
 @Component({
   selector: 'app-ticket-detail',
@@ -21,22 +22,28 @@ export class TicketDetailComponent implements OnInit {
   loadingTicket = false
   loadingComments = false
   loadingUsers = false
+  deleteLoading = false
   errorMessage = ''
 
   commentMessage = ''
-  selectedStatus = 'Open'
+  selectedStatus = ''
   commentUserId = 0
 
   constructor(private route: ActivatedRoute,
+    private router : Router,
     private ticketService: TicketService,
     private ticketCommentService: TicketCommentService,
-    private userService: UserService) { }
+    private userService: UserService,
+    public authService: AuthService
+  ) { }
 
   ngOnInit() {
     this.ticketId = Number(this.route.snapshot.paramMap.get('id'));
-    this.loadUsers();
     this.loadTicket();
     this.loadComments();
+    console.log(this.permission())
+    console.log(this.permission())
+    console.log(this.ticket)
   }
 
 
@@ -45,7 +52,7 @@ export class TicketDetailComponent implements OnInit {
     this.ticketService.getTicketById(this.ticketId).subscribe({
       next: (response) => {
         this.ticket = response
-          this.selectedStatus = this.selectedStatus
+        this.selectedStatus = this.ticket.status
           this.loadingTicket = false
       },
       error: (error) => {
@@ -66,23 +73,6 @@ export class TicketDetailComponent implements OnInit {
         console.log(error)
         this.errorMessage = error
         this.loadingComments = false
-      }
-    })
-  }
-  loadUsers(): void {
-    this.loadingUsers = true
-    this.userService.getUsers().subscribe({
-      next: (response) => {
-        this.users = response
-        this.loadingUsers = false
-        if (this.users.length > 0) {
-          this.commentUserId = this.users[0].id
-        }
-      },
-      error: (error) => {
-        console.log(error)
-        this.errorMessage = "gagal mengambil data user"
-        this.loadingUsers=false
       }
     })
   }
@@ -118,5 +108,41 @@ export class TicketDetailComponent implements OnInit {
         console.log(error)
       }
     })
+  }
+
+  deleteTicket(): void {
+    if (!this.ticket) {
+      return;
+    }
+    const confirmed = window.confirm(`hapus ticket ${this.ticket.title}? `)
+    if (!confirmed) {
+      return;
+    }
+    this.deleteLoading = true
+    this.errorMessage = ''
+    this.ticketService.deleteTicket(this.ticket.id).subscribe({
+      next: (response) => {
+        this.deleteLoading = false;
+        this.router.navigate(["/tickets"])
+      },
+      error: (error) => {
+        this.deleteLoading = false;
+        this.errorMessage = error?.error?.message??"gagal delete ticket"
+      }
+    })
+  }
+  permission(): boolean {
+    return this.authService.getCurrentUserId() == this.ticket?.createdByUserId
+  }
+  canDelete(): boolean {
+    if (!this.ticket) {
+      return false
+    }
+    return this.authService.isAdmin() ||
+      (
+        this.authService.isEmployee() &&
+        this.authService.getCurrentUserId() == this.ticket.createdByUserId &&
+        this.ticket.status === 'Open'
+      );
   }
 }

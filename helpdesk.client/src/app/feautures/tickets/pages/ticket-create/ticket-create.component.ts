@@ -1,7 +1,9 @@
 import { Component,OnInit } from '@angular/core';
 import { Router } from '@angular/router'
+import { FormBuilder, Validators, FormGroup } from '@angular/forms'
 import { TicketService } from '../../../../core/services/ticket.service'
 import { UserService } from '../../../../core/services/user.service'
+import { AuthService } from '../../../../core/services/auth.service'
 import { User } from '../../../users/models/user.model';
 @Component({
   selector: 'app-ticket-create',
@@ -10,49 +12,38 @@ import { User } from '../../../users/models/user.model';
   styleUrl: './ticket-create.component.css'
 })
 export class TicketCreateComponent implements OnInit {
-  formData = {
-    title: '',
-    description: '',
-    priority: 'Medium',
-    createdByUserId:1
-  }
-  users: User[]=[]
+  form!: FormGroup;
+  
   loading = false;
   errorMessage = '';
   constructor(
     private ticketService: TicketService,
     private userService: UserService,
+    private authService: AuthService,
+    private formBuilder: FormBuilder,
     private router: Router
   ) { }
   ngOnInit(): void {
-    this.loadUsers()
-  }
-
-  loadUsers(): void {
-    this.userService.getUsers().subscribe({
-      next: (response) => {
-        this.users = response
-      },
-      error: (error) => {
-        console.log(error)
-      }
-    })
+    this.form = this.formBuilder.group({
+      title: ['', Validators.required],
+      description: ['', Validators.required],
+      priority: ['Medium', Validators.required],
+      createdByUserId: this.authService.getCurrentUserId()
+    });
+    console.log(this.authService.getCurrentUserId())
   }
 
   submitForm(): void {
     this.errorMessage = ''
-    if (!this.formData.title.trim()) {
-      this.errorMessage = "Title wajib diisi"
-      return
-    }
-    if (!this.formData.description.trim()) {
-      this.errorMessage = "Description wajib diisi"
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
       return
     }
     this.loading = true;
-    this.ticketService.createTicket(this.formData).subscribe({
+    this.ticketService.createTicket(this.form.value).subscribe({
       next: () => {
         this.loading = false;
+        this.form.reset();
         this.router.navigate(['/tickets']);
       },
       error: (error) => {
@@ -61,5 +52,14 @@ export class TicketCreateComponent implements OnInit {
         this.loading = false
       }
     })
+  }
+  get title() {
+    return this.form.get("title")
+  }
+  get description() {
+    return this.form.get("description")
+  }
+  get priority() {
+    return this.form.get("priority")
   }
 }
